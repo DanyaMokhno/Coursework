@@ -297,6 +297,7 @@ void set_brand(Smartphone *smartphone, char *brand, Brands *brands)
     {
         cur_brand = malloc(sizeof(Brand));
         cur_brand->name = brand;
+        cur_brand->next = NULL;
         if (prev_brand)
             prev_brand->next = cur_brand;
         else
@@ -398,7 +399,7 @@ void menu(Storage *storage, Brands *brands, FILE *file)
                 break;
             case 3:
             {
-                puts("введите индекс: ");
+                puts("input index: ");
                 scanf("%i", &val);
                 getchar();
                 position = create_position(val);
@@ -417,7 +418,7 @@ void menu(Storage *storage, Brands *brands, FILE *file)
                 else
                 {
                     print_table(storage);
-                    puts("введите индекс: ");
+                    puts("input index: ");
                     scanf("%i", &val);
                     getchar();
                     delete_selected(storage, val);
@@ -427,7 +428,7 @@ void menu(Storage *storage, Brands *brands, FILE *file)
                 break;
             case 5:
             {
-                puts("введите индекс: ");
+                puts("input index: ");
                 scanf("%i", &val);
                 getchar();
                 change_position(storage, val, brands);
@@ -438,7 +439,7 @@ void menu(Storage *storage, Brands *brands, FILE *file)
             {
                 puts("select the parameter to be searched for");
                 print_opt();
-                puts("введите индекс: ");
+                puts("input index: ");
                 scanf("%i", &val);
                 arr = malloc(storage->size * sizeof(Smartphone *));
                 if (arr)
@@ -470,7 +471,7 @@ void menu(Storage *storage, Brands *brands, FILE *file)
             {
                 puts("select the parameter by which the sorting will be performed");
                 print_opt();
-                puts("введите индекс: ");
+                puts("input index: ");
                 scanf("%i", &val);
                 arr = malloc(storage->size * sizeof(Smartphone *));
                 if (arr)
