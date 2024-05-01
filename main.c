@@ -3,8 +3,8 @@
 #include <string.h>
 
 #ifdef WIN32
-#define CLS system("cls")
 #include <stdint.h>
+#define CLS system("cls")
 #else
 #define CLS system("clear")
 //#define CLS
@@ -203,7 +203,7 @@ FILE *open_file()
     file = fopen(filename, "r+");
     if (!file)
     {
-        printf("File not exist!\nDo you want create file?(y/n)");
+        printf("File not exist!\nDo you want create file?(y/n): ");
         create = (char) getchar();
         if (create == 'y' || create == 'Y') file = fopen(filename, "w");
     }
