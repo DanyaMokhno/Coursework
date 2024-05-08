@@ -4,12 +4,14 @@
 
 #ifdef WIN32
 #include <stdint.h>
-#define CLS system("cls")
+#define CLS system("cls");
+//#define CH_TO_UTF8 system("chсp 65001");
 #else
-#define CLS system("clear")
-//#define CLS
+#define CLS system("clear");
+//#define CH_TO_UTF8
 #endif
-#define PRINT_LINE puts("+-----+----------------------+-----------------+-------+---------+--------+---------+----------+");
+#define PRINT_LINE puts("+-----+----------------------+-----------------+-------+---------+--------+---------+----------+-------------------+");
+#define MIN(a, b) (a < b) ? a : b
 
 /* start define bool type */
 typedef uint8_t bool;
@@ -34,23 +36,24 @@ typedef struct Brand
 
 typedef struct Brands
 {
-//    int size;
     Brand *first_brand;
 } Brands;
 
 typedef struct Smartphone
 {
-    char *model;             /* Модель */
-    Brand *brand;           /* Марка */
-    int ram;                 /* Объем оперативной памяти, ГБ */
-    int memory;              /* Объем постоянной памяти, ГБ */
-    float screen_size;       /* Размер экрана, дюймы */
-    float weight;            /* Вес, граммы */
-    float price;             /* Цена, доллары */
+    char *model;             /* Model */
+    Brand *brand;            /* Brand */
+    int ram;                 /* RAM size, GB */
+    int memory;              /* Storage capacity, GB */
+    float screen_size;       /* Screen size, inches */
+    float weight;            /* Weight, grams */
+    float price;             /* Price, dollars */
+    int *camera_resolution;  /* Camera resolution (per camera) */
+    int number_of_cameras;   /* number of cameras */
 
-    int index;               /* индекс */
-    struct Smartphone *next; /* указатель на следующий элемент списка */
-    struct Smartphone *prev; /* указатель на предыдущий элемент списка */
+    int index;               /* Index */
+    struct Smartphone *next; /* Pointer to the next element in the list */
+    struct Smartphone *prev; /* Pointer to the previous element in the list */
 } Smartphone;
 
 typedef struct Storage
@@ -65,99 +68,148 @@ typedef float(Getters)(Smartphone *smartphone);
 
 typedef char *(StrGetters)(Smartphone *smartphone);
 
-/*--------- Define function-----------*/
+/*--------- Define functions -----------*/
+
+// Function to create an empty storage
 
 Storage *create_storage();
 
+// Function to create an empty list of brands
 Brands *create_brands();
 
+// Function to open a file for reading
 FILE *open_file();
 
+// Function to fill the storage with smartphones from a file
 void fill_storage(Storage *storage, FILE *source, Brands *brands);
 
+// Function to create a new smartphone with a given index
 Smartphone *create_position(int index);
 
+// Function to set values for a smartphone
 void set_values(Smartphone *smartphone, char *str, Brands *brands);
 
+// Function to set the brand for a smartphone
 void set_brand(Smartphone *smartphone, char *brand, Brands *brands);
 
+// Function to split camera resolutions from a string and set them to a smartphone
+void split_camera_resolution(Smartphone *smartphone, char *str);
+
+// Function to add a smartphone as the first element in the storage
 void add_first(Storage *storage, Smartphone *new_position);
 
+// Function to add a smartphone after a specified position in the storage
 void add(Storage *storage, Smartphone *cur_position, Smartphone *new_position);
 
+// Main menu function
 void menu(Storage *storage, Brands *brands, FILE *file);
 
 // Function to display help information
 void help();
 
+// Function to print the storage table
 void print_table(Storage *storage);
 
+// Function to print the header of the storage table
 void print_header();
 
+// Function to print a smartphone's information in the table format
 void print(Smartphone *smartphone);
 
+// Function to concatenate camera resolutions into a string
+char *glue_camera_resolutions(Smartphone *smartphone);
+
+// Function to read a string from the input
 void get_string(char *string, int max_len);
 
-//void get_values_from_console(Smartphone *position, char *brand);
-
+// Function to insert a smartphone at a specified index in the storage
 void insert_selected(Storage *storage, Smartphone *new, int index);
 
+// Function to delete a smartphone from the storage by its index
 void delete_selected(Storage *storage, int index);
 
+// Function to change the information of a smartphone in the storage
 void change_position(Storage *storage, int index, Brands *brands);
 
+// Function to print all available brands
+void print_brands(Brands *brands);
+
+// Function to find smartphones by brand
+int find_brands(Storage *storage, Smartphone **arr, Brands *brands, int value);
+
+// Function to find smartphones by numeric attribute
 int find(Storage *storage, Smartphone **arr, Getters get, float search_val);
 
+// Function to find smartphones by string attribute
 int find_str(Storage *storage, Smartphone **arr, StrGetters str_get, char *search_str);
 
+// Function to perform sorting of smartphones
 void sorting(Smartphone **arr, int b, int e, bool is_str, Getters get, StrGetters str_get);
 
 /* getters */
+
+// Getter function for the model attribute
 char *get_model(Smartphone *smartphone);
 
+// Getter function for the brand attribute
 char *get_brand(Smartphone *smartphone);
 
+// Getter function for the RAM attribute
 float get_ram(Smartphone *smartphone);
 
+// Getter function for the memory attribute
 float get_memory(Smartphone *smartphone);
 
+// Getter function for the screen size attribute
 float get_screen_size(Smartphone *smartphone);
 
+// Getter function for the weight attribute
 float get_weight(Smartphone *smartphone);
 
+// Getter function for the price attribute
 float get_price(Smartphone *smartphone);
+
+// Getter function for the camera resolution attribute
+float get_camera_resolution(Smartphone *smartphone);
 
 /* ------ */
 
+// Function to print menu options for search and sort
 void print_opt();
 
+// Function to swap two smartphone pointers
 void swap(Smartphone **a, Smartphone **b);
 
+// Function to save the storage to a file
 void save_storage(Storage *storage, FILE *file);
 
+// Function to delete a smartphone from memory
 void delete_position(Smartphone *position);
 
+// Function to delete the list of brands from memory
 void delete_brands(Brands *brand);
 
+// Function to delete the storage from memory
 void delete_storage(Storage *storage);
 
-/*--------- Define function-----------*/
+/*--------- End define functions -----------*/
 
 int main()
 {
-    Storage *Market = NULL;
-    Brands *brands = NULL;
+    Storage *Market = NULL; // Head of storage list
+    Brands *brands = NULL;  // Head of brands list
     FILE *file;
     file = open_file();
     Market = create_storage();
     brands = create_brands();
     if (Market && brands)
     {
+//        CH_TO_UTF8
         fill_storage(Market, file, brands);
         if (Market->size >= 0)
             menu(Market, brands, file);
 
-        /*----destroy structs----*/
+        /*---- destroy structs ----*/
         delete_storage(Market);
         delete_brands(brands);
     }
@@ -166,7 +218,7 @@ int main()
 
 Storage *create_storage()
 {
-    Storage *storage;
+    Storage *storage;   // Head of storage list
     storage = malloc(sizeof(Storage));
     if (storage)
     {
@@ -180,11 +232,10 @@ Storage *create_storage()
 
 Brands *create_brands()
 {
-    Brands *brands;
+    Brands *brands; // Head of brands list
     brands = malloc(sizeof(Brands));
     if (brands)
     {
-//        brands->size = 0;
         brands->first_brand = NULL;
     }
     return brands;
@@ -192,10 +243,10 @@ Brands *create_brands()
 
 FILE *open_file()
 {
-    char filename[MAX_FILENAME_LEN];
-    char create;
-    FILE *file;
-    size_t len;
+    char filename[MAX_FILENAME_LEN];    // Name of source/destination file
+    char create;                        // Yes/No chosen
+    FILE *file;                         // File object
+    size_t len;                         // Length of file
     printf("Input filename: ");
     fgets(filename, MAX_FILENAME_LEN, stdin);
     len = strlen(filename);
@@ -212,14 +263,13 @@ FILE *open_file()
 
 void fill_storage(Storage *storage, FILE *source, Brands *brands)
 {
-    Smartphone *new_pos;
-    char tmp_str[MAX_STR_IN_FILE_LEN];
-    int i;
+    Smartphone *new_pos;                // New element of list
+    char tmp_str[MAX_STR_IN_FILE_LEN];  // String from source file
+    int i;                              // Iterator
     if (storage != NULL)
     {
         if (source != NULL)
         {
-            // проходимся по файлу
             for (i = 1; fgets(tmp_str, MAX_STR_IN_FILE_LEN, source); i++)
             {
                 new_pos = create_position(i);
@@ -240,7 +290,7 @@ void fill_storage(Storage *storage, FILE *source, Brands *brands)
 
 Smartphone *create_position(int index)
 {
-    Smartphone *position = NULL;
+    Smartphone *position = NULL;    // New element of list
     position = (Smartphone *) malloc(sizeof(Smartphone));
     if (position)
     {
@@ -252,38 +302,48 @@ Smartphone *create_position(int index)
 
 void set_values(Smartphone *smartphone, char *str, Brands *brands)
 {
-    char *brand_name;
+    char *brand_name;   // String with name of brand
+    char *cameras;      // String with camera resolutions
     smartphone->model = malloc(sizeof(char) * MAX_MODEL_NAME_LEN);
+    cameras = malloc(MAX_MODEL_NAME_LEN * sizeof(char));
     smartphone->brand = NULL;
     brand_name = malloc(sizeof(char) * MAX_MODEL_NAME_LEN);
-    if (str != NULL)
-        sscanf(str, "%[^,],%[^,],%d,%d,%f,%f,%f", smartphone->model, brand_name,
-               &(smartphone->ram), &(smartphone->memory), &(smartphone->screen_size),
-               &(smartphone->weight), &(smartphone->price));
-    else
+    if (cameras && brand_name)
     {
-        printf("input model: ");
-        get_string(smartphone->model, MAX_MODEL_NAME_LEN);
-        printf("input brand: ");
-        get_string(brand_name, MAX_MODEL_NAME_LEN);
-        printf("input ram: ");
-        scanf("%d", &(smartphone->ram));
-        printf("input memory: ");
-        scanf("%d", &(smartphone->memory));
-        printf("input screen size: ");
-        scanf("%f", &(smartphone->screen_size));
-        printf("input weight: ");
-        scanf("%f", &(smartphone->weight));
-        printf("input price: ");
-        scanf("%f", &(smartphone->price));
-
+        if (str != NULL)
+            sscanf(str, "%[^,],%[^,],%d,%d,%f,%f,%f,%[^,]", smartphone->model, brand_name,
+                   &(smartphone->ram), &(smartphone->memory), &(smartphone->screen_size),
+                   &(smartphone->weight), &(smartphone->price), cameras);
+        else
+        {
+            printf("input model: ");
+            get_string(smartphone->model, MAX_MODEL_NAME_LEN);
+            printf("input brand: ");
+            get_string(brand_name, MAX_MODEL_NAME_LEN);
+            printf("input ram: ");
+            scanf("%d", &(smartphone->ram));
+            printf("input memory: ");
+            scanf("%d", &(smartphone->memory));
+            printf("input screen size: ");
+            scanf("%f", &(smartphone->screen_size));
+            printf("input weight: ");
+            scanf("%f", &(smartphone->weight));
+            printf("input price: ");
+            scanf("%f", &(smartphone->price));
+            getchar();
+            printf("input cameras: ");
+            get_string(cameras, MAX_MODEL_NAME_LEN);
+        }
+        set_brand(smartphone, brand_name, brands);
+        split_camera_resolution(smartphone, cameras);
+        free(cameras);
     }
-    set_brand(smartphone, brand_name, brands);
 }
 
 void set_brand(Smartphone *smartphone, char *brand, Brands *brands)
 {
-    Brand *cur_brand, *prev_brand = NULL;
+    Brand *cur_brand;           // Current element of brand list
+    Brand *prev_brand = NULL;   // Previous element of brand list
     cur_brand = brands->first_brand;
 
     while (cur_brand != NULL)
@@ -306,9 +366,41 @@ void set_brand(Smartphone *smartphone, char *brand, Brands *brands)
     } else free(brand);
 }
 
+void split_camera_resolution(Smartphone *smartphone, char *str)
+{
+    int i, j, k;    // Iterators
+    char *tmp_str;  // String for contain numbers from file
+    int len;        // Length of source string
+    int number;     // Number of cameras in the smartphone
+    if (smartphone)
+    {
+        len = (int) strlen(str);
+        for (i = 0, number = 1; i < len; i++) if (str[i] == '+') number++;
+        tmp_str = malloc(5 * sizeof(char));
+        smartphone->camera_resolution = malloc(sizeof(int) * number);
+        if (number != 0)
+        {
+            for (i = 0, j = 0, k = 0; i <= len; i++, j++)
+            {
+                if (str[i] != '+' && str[i] != '\0')
+                {
+                    tmp_str[j] = str[i];
+                } else
+                {
+                    smartphone->camera_resolution[k] = atoi(tmp_str);
+                    strcpy(tmp_str, "    ");
+                    k++;
+                    j = -1;
+                }
+            }
+        }
+        smartphone->number_of_cameras = number;
+        free(tmp_str);
+    }
+}
+
 void add(Storage *storage, Smartphone *cur_position, Smartphone *new_position)
 {
-    //вставка в конец
     if (storage)
     {
         storage->size++;
@@ -325,6 +417,7 @@ void add(Storage *storage, Smartphone *cur_position, Smartphone *new_position)
             } else
             {
                 new_position->next = cur_position->next;
+                cur_position->next->prev = new_position;
                 cur_position->next = new_position;
                 new_position->prev = cur_position;
             }
@@ -343,14 +436,15 @@ void add_first(Storage *storage, Smartphone *new_position)
 
 void menu(Storage *storage, Brands *brands, FILE *file)
 {
-    int val;
-    int i;
-    char search_string[MAX_MODEL_NAME_LEN];
-    float search_val;
-    Smartphone *position;
-    Smartphone **arr;
-    Getters *getters[5];
-    StrGetters *str_getters[2];
+    int global_menu_choice;                 // Integer variable to store the user's choice for the menu option
+    int val;                                // Integer variable used for various purposes, such as indexing and storing user input
+    int i;                                  // Iterator
+    char search_string[MAX_MODEL_NAME_LEN]; // Character array to store the search string input by the user
+    float search_val;                       // Floating-point variable to store the search value input by the user
+    Smartphone *position;                   // Pointer to a Smartphone structure, used for various operations within the menu
+    Smartphone **arr;                       // Pointer to an array of pointers to Smartphone structures, used for storing positions for searching or sorting
+    Getters *getters[6];                    // Array of function pointers to getter functions for different attributes of a smartphone
+    StrGetters *str_getters[2];             // Array of function pointers to getter functions specifically for string attributes of a smartphone
 
     str_getters[0] = get_model;
     str_getters[1] = get_brand;
@@ -359,9 +453,10 @@ void menu(Storage *storage, Brands *brands, FILE *file)
     getters[2] = get_screen_size;
     getters[3] = get_weight;
     getters[4] = get_price;
+    getters[5] = get_camera_resolution;
     do
     {
-        CLS;
+        CLS
         if (storage->saved) puts("\x1b[1;32mSaved\x1b[0m");
         else puts("\x1b[1;4;31mDon't saved\x1b[0m");
         puts("There are some options:");
@@ -376,13 +471,13 @@ void menu(Storage *storage, Brands *brands, FILE *file)
         puts("9 - for save storage");
         puts("0 - for EXIT program");
         puts("\nEnter option: ");
-        scanf("%d", &val);
+        scanf("%d", &global_menu_choice);
         getchar();
-        switch (val)
+        switch (global_menu_choice)
         {
             case 1:
             {
-                CLS;
+                CLS
                 help();
             }
                 break;
@@ -399,21 +494,26 @@ void menu(Storage *storage, Brands *brands, FILE *file)
                 break;
             case 3:
             {
-                puts("input index: ");
+                CLS
+                print_table(storage);
+                puts("input index for insert: ");
                 scanf("%i", &val);
                 getchar();
-                position = create_position(val);
-                if (position)
+                if (val > 0)
                 {
-                    set_values(position, NULL, brands);
-                    insert_selected(storage, position, val);
-                }
-                storage->saved = false;
+                    position = create_position(val);
+                    if (position)
+                    {
+                        set_values(position, NULL, brands);
+                        insert_selected(storage, position, val);
+                    }
+                    storage->saved = false;
+                } else printf("\x1b[1;31mindex is out of list\x1b[0m\n");
             }
                 break;
             case 4:
             {
-                CLS;
+                CLS
                 if (storage->size == 0) printf("Market is empty\n");
                 else
                 {
@@ -428,78 +528,99 @@ void menu(Storage *storage, Brands *brands, FILE *file)
                 break;
             case 5:
             {
+                CLS
+                print_table(storage);
                 puts("input index: ");
                 scanf("%i", &val);
                 getchar();
-                change_position(storage, val, brands);
-                storage->saved = false;
+                if (val > 0)
+                {
+                    change_position(storage, val, brands);
+                    storage->saved = false;
+                }
             }
                 break;
             case 6:
             {
+                CLS
+                print_table(storage);
                 puts("select the parameter to be searched for");
                 print_opt();
-                puts("input index: ");
+                puts("input option: ");
                 scanf("%i", &val);
-                arr = malloc(storage->size * sizeof(Smartphone *));
-                if (arr)
+                if (val > 0 && val < 9)
                 {
-                    for (i = 0, position = storage->first_pos; i < storage->size; i++, position = position->next)
-                        arr[i] = position;
-                    if (val > 0 && val < 3)
+                    arr = malloc(storage->size * sizeof(Smartphone *));
+                    if (arr)
                     {
-                        puts("input search string:");
-                        getchar();
-                        get_string(search_string, MAX_MODEL_NAME_LEN);
-                        val = find_str(storage, arr, str_getters[val - 1], search_string);
-                    } else if (val > 0)
-                    {
-                        puts("input search value:");
-                        scanf("%f", &search_val);
-                        val = find(storage, arr, getters[val - 3], search_val);
+                        for (i = 0, position = storage->first_pos; i < storage->size; i++, position = position->next)
+                            arr[i] = position;
+                        if (val == 2)
+                        {
+                            print_brands(brands);
+                            puts("input search value:");
+                            scanf("%i", &val);
+                            val = find_brands(storage, arr, brands, val);
+                        } else if (val < 3)
+                        {
+                            puts("input search string:");
+                            getchar();
+                            get_string(search_string, MAX_MODEL_NAME_LEN);
+                            val = find_str(storage, arr, str_getters[val - 1], search_string);
+                        } else
+                        {
+                            puts("input search value:");
+                            scanf("%f", &search_val);
+                            val = find(storage, arr, getters[val - 3], search_val);
+                        }
+                        /* print table from arr */
+                        print_header();
+                        for (i = 0; i < val; i++) print(arr[i]);
+                        PRINT_LINE
                     }
-                    /*print table from arr*/
-                    print_header();
-                    for (i = 0; i < val; i++) print(arr[i]);
-                    PRINT_LINE
-                    getchar();
-                }
-                free(arr);
+                    free(arr);
+                } else puts("\x1b[1;31mIncorrect key!\x1b[0m");
+                getchar();
             }
                 break;
             case 7:
             {
+                CLS
+                print_table(storage);
                 puts("select the parameter by which the sorting will be performed");
                 print_opt();
                 puts("input index: ");
                 scanf("%i", &val);
-                arr = malloc(storage->size * sizeof(Smartphone *));
-                if (arr)
+                if (val > 0 && val < 9)
                 {
-                    for (i = 0, position = storage->first_pos; i < storage->size; i++, position = position->next)
-                        arr[i] = position;
-                    if (val > 0 && val < 3)
-                        sorting(arr, 0, storage->size - 1, true, NULL, str_getters[val - 1]);
-                    else if (val > 0)
-                        sorting(arr, 0, storage->size - 1, false, getters[val - 3], NULL);
-                    /*print table from arr*/
-                    print_header();
-                    for (i = 0; i < storage->size; i++) print(arr[i]);
-                    getchar();
-                }
-                free(arr);
+                    arr = malloc(storage->size * sizeof(Smartphone *));
+                    if (arr)
+                    {
+                        for (i = 0, position = storage->first_pos; i < storage->size; i++, position = position->next)
+                            arr[i] = position;
+                        if (val > 0 && val < 3)
+                            sorting(arr, 0, storage->size - 1, true, NULL, str_getters[val - 1]);
+                        else if (val > 0)
+                            sorting(arr, 0, storage->size - 1, false, getters[val - 3], NULL);
+                        /*print table from arr*/
+                        print_header();
+                        for (i = 0; i < storage->size; i++) print(arr[i]);
+                    }
+                    free(arr);
+                } else puts("\x1b[1;31mIncorrect key!\x1b[0m");
+                getchar();
             }
                 break;
             case 8:
             {
-                CLS;
+                CLS
                 print_table(storage);
                 printf("size: %d\n", storage->size);
             }
                 break;
             case 9:
             {
-                CLS;
+                CLS
                 save_storage(storage, file);
             }
                 break;
@@ -510,24 +631,50 @@ void menu(Storage *storage, Brands *brands, FILE *file)
                 break;
             default:
             {
-                puts("Incorrect key!");
+                puts("\x1b[1;31mIncorrect key!\x1b[0m");
                 getchar();
             }
 
         }
         puts("Press ENTER to continue");
         getchar();
-    } while (val != 0);
+    } while (global_menu_choice != 0);
 }
 
 void help()
 {
-    printf("help\n");
+    printf("\n\nSMARTPHONE MARKET MANAGEMENT SYSTEM\n\n"
+           "DESCRIPTION:\n"
+           "This program allows you to manage a list of smartphones in a market.\n"
+           "You can add, insert, remove, modify, find, sort, print, and save smartphone positions.\n\n"
+           "OPTIONS:\n"
+           "1 - HELP: Display this help message.\n"
+           "2 - Add Position: Add a new smartphone position to the market.\n"
+           "3 - Insert Position: Insert a new smartphone position at a specific index in the market.\n"
+           "4 - Remove Position: Remove a smartphone position from the market.\n"
+           "5 - Change Position: Modify details of a smartphone position.\n"
+           "6 - Find Position: Search for smartphone positions based on various criteria.\n"
+           "7 - Sort Storage: Sort the list of smartphone positions based on selected parameters.\n"
+           "8 - Print Storage: Display all smartphone positions in the market.\n"
+           "9 - Save Storage: Save the current list of smartphone positions to a file.\n"
+           "0 - Exit Program: Exit the program.\n\n"
+           "USAGE:\n"
+           "- Choose the appropriate option from the main menu.\n"
+           "- For 'Add Position', enter details for the new smartphone when prompted.\n"
+           "- For 'Insert Position', specify the index and enter details for the new smartphone.\n"
+           "- For 'Remove Position', input the index of the smartphone to be removed.\n"
+           "- For 'Change Position', input the index of the smartphone to modify and enter updated details.\n"
+           "- For 'Find Position', choose the search parameter and enter the search value.\n"
+           "- For 'Sort Storage', select the parameter for sorting the smartphone positions.\n"
+           "- For 'Print Storage', display all smartphone positions currently in the market.\n"
+           "- For 'Save Storage', save the current list of smartphones to a file.\n\n"
+           "NOTE:\n"
+           "To end input, press ENTER after each prompt. To exit text input, press Ctrl+D (UNIX-like systems) or Ctrl+Z (Windows).\n");
 }
 
 void print_table(Storage *storage)
 {
-    Smartphone *cur;
+    Smartphone *cur;    // cur element in list
     cur = storage->first_pos;
     print_header();
     while (cur != NULL)
@@ -541,56 +688,78 @@ void print_table(Storage *storage)
 void print_header()
 {
     PRINT_LINE
-    printf("| %-5s | %-20s | %-15s | %-5s | %-5s | %-6s | %-7s | %-8s |\n",
-           "№", "Model", "Brand", "RAM", "Storage", "Screen", "Weight", "Price");
+    /* № – %-5s и убрать один пробел*/
+    printf("|  %-4s | %-20s | %-15s | %-5s | %-5s | %-6s | %-7s | %-8s | %-17s |\n",
+           "N\x1b[4mo\x1b[0m", "Model", "Brand", "RAM", "Storage", "Screen", "Weight", "Price", "Camera Resolution");
     PRINT_LINE
 }
 
 void print(Smartphone *smartphone)
 {
-    printf("| %3i | %-20s | %-15s | %-3dGB | %-5dGB | %-5.2f\" | %-6.2fg | $%-7.2f |\n",
+    char *camera_res; // string for contain glued camera resolution
+    camera_res = glue_camera_resolutions(smartphone);
+    printf("| %3i | %-20s | %-15s | %-3dGB | %-5dGB | %-5.2f\" | %-6.2fg | $%-7.2f | %15smp |\n",
            smartphone->index, smartphone->model, smartphone->brand->name, smartphone->ram, smartphone->memory,
-           smartphone->screen_size, smartphone->weight, smartphone->price);
+           smartphone->screen_size, smartphone->weight, smartphone->price, camera_res);
+    free(camera_res);
+}
+
+char *glue_camera_resolutions(Smartphone *smartphone)
+{
+    int i, j, k;       // Iterators
+    char *cameras_res;  // string for contain glued camera resolution
+    char tmp_cam[4];    // string for temporary containment of number from array of camera resolutions
+
+    cameras_res = malloc(smartphone->number_of_cameras * 3 * sizeof(char));
+    for (i = 0, j = 0; i < smartphone->number_of_cameras; i++)
+    {
+        snprintf(tmp_cam, sizeof(tmp_cam), "%d", smartphone->camera_resolution[i]);
+        for (k = 0; k < strlen(tmp_cam); k++, j++)
+            cameras_res[j] = tmp_cam[k];
+        if (i < smartphone->number_of_cameras - 1)
+        {
+            cameras_res[j] = '+';
+            j++;
+        }
+    }
+    cameras_res[j] = '\0';
+    return cameras_res;
 }
 
 void insert_selected(Storage *storage, Smartphone *new, int index)
 {
-    Smartphone *cur;
-    int found;
+    Smartphone *cur;    // Current element of list
+    bool found;         // flag of found number
 
     found = 0;
     if (storage->size == 0)
     {
         add_first(storage, new);
         storage->size++;
-    } else if (storage->last_pos->index < index) // storage->size < index
+    } else if (storage->last_pos->index < index)
     {
         cur = storage->last_pos;
-//        new->index = storage->size + 1;
+        new->index = storage->size + 1;
         add(storage, cur, new);
     } else
     {
         cur = storage->first_pos;
         while (cur)
         {
-            if ((cur->next) && (cur->index < index && cur->next->index > index))
-            {
-                add(storage, cur, new);
-                cur = NULL;
-            } else if ((cur->next) && (cur->next->index == index))
+            if ((cur->next) && (cur->next->index == index))
             {
                 add(storage, cur, new);
                 cur = cur->next->next;
                 cur->index++;
                 cur = cur->next;
-                found = 1;
+                found = true;
             } else
             {
                 if (!found) cur = cur->next;
                 else
                 {
                     cur->index++;
-                    if (!(cur->next) || (cur->next && cur->next->index - cur->index > 1)) cur = NULL;
+                    if (!(cur->next)) cur = NULL;
                     else cur = cur->next;
                 }
             }
@@ -600,17 +769,11 @@ void insert_selected(Storage *storage, Smartphone *new, int index)
 
 void delete_selected(Storage *storage, int index)
 {
-    Smartphone *cur, *tmp;
+    Smartphone *cur;    // Current element of list
+    Smartphone *tmp;    // Temporary pointer to the element being deleted
     cur = storage->first_pos;
 
-    // ищем что удалить
-    if (storage->first_pos->index == index)
-    {
-        storage->first_pos = cur->next;
-        if (cur->next) cur->next->prev = NULL;
-        delete_position(cur);
-        storage->size--;
-    } else if (storage->size == 1 && cur->index == index)
+    if (storage->size == 1)
     {
         tmp = cur;
         storage->first_pos = NULL;
@@ -630,26 +793,34 @@ void delete_selected(Storage *storage, int index)
         printf("\x1b[1;31mindex is out of list\x1b[0m\n");
     } else
     {
+        cur = storage->last_pos;
         while (cur != NULL)
         {
-            if (cur->next->index == index)
+            cur->index--;
+            if (cur->prev->index == index)
             {
-                tmp = cur->next;
-                cur->next = tmp->next;
-                tmp->next->prev = cur;
+                tmp = cur->prev;
+                cur->prev = tmp->prev;
+                if (cur->index == 1)
+                {
+                    storage->first_pos = cur;
+                    cur->prev = NULL;
+                } else
+                    tmp->prev->next = cur;
                 delete_position(tmp);
                 cur = NULL;
                 storage->size--;
             } else
-                cur = cur->next;
+                cur = cur->prev;
         }
     }
 }
 
 void change_position(Storage *storage, int index, Brands *brands)
 {
-    Smartphone *item;
-    char *brand_name;
+    Smartphone *item;   // Current/changeable element of list
+    char *brand_name;   // String with name of brand
+    char *cameras;      // String with camera resolutions
 
     brand_name = malloc(sizeof(char) * MAX_MODEL_NAME_LEN);
     item = storage->first_pos;
@@ -685,6 +856,13 @@ void change_position(Storage *storage, int index, Brands *brands)
     printf("\x1b[1;36minput price: ");
     scanf("%f", &(item->price));
 
+    cameras = glue_camera_resolutions(item);
+    printf("\x1b[1;33mOld camera resolutions: %s\x1b[0m\n", cameras);
+    printf("\x1b[1;36minput camera resolutions: ");
+    get_string(cameras, MAX_MODEL_NAME_LEN);
+    split_camera_resolution(item, cameras);
+    free(cameras);
+
 }
 
 void print_opt()
@@ -695,13 +873,43 @@ void print_opt()
          "4 - memory size\n"
          "5 - screen size\n"
          "6 - weight\n"
-         "7 - price");
+         "7 - price\n"
+         "8 - camera resolution");
+}
+
+void print_brands(Brands *brands)
+{
+    Brand *cur; // Current brand element
+    int i;
+    for (i = 0, cur = brands->first_brand; cur != NULL; i++, cur = cur->next)
+        printf("%i - %s\n", i + 1, cur->name);
+}
+
+int find_brands(Storage *storage, Smartphone **arr, Brands *brands, int value)
+{
+    Smartphone *cur_sm; // Current element of list
+    Brand *cur;         // Current brand element
+    int i;              // Iterator
+
+    for (i = 0, cur = brands->first_brand; i < value - 1; i++, cur = cur->next);
+
+    cur_sm = storage->first_pos;
+    for (i = 0, value = 0; cur_sm != NULL; i++)
+    {
+        if (cur_sm->brand == cur)
+        {
+            arr[i] = cur_sm;
+            value++;
+        }
+        cur_sm = cur_sm->next;
+    }
+    return value;
 }
 
 int find(Storage *storage, Smartphone **arr, Getters get, float search_val)
 {
-    Smartphone *cur;
-    int i;
+    Smartphone *cur;    // Current element of list
+    int i;              // Iterator
     cur = storage->first_pos;
     i = 0;
     while (cur != NULL)
@@ -718,13 +926,13 @@ int find(Storage *storage, Smartphone **arr, Getters get, float search_val)
 
 int find_str(Storage *storage, Smartphone **arr, StrGetters str_get, char *search_str)
 {
-    Smartphone *cur;
-    int i;
+    Smartphone *cur;    // Current element of list
+    int i;              // Integer
     cur = storage->first_pos;
     i = 0;
     while (cur != NULL)
     {
-        if ((strcmp(str_get(cur), search_str) == 0))
+        if ((strncmp(str_get(cur), search_str, MIN(strlen(str_get(cur)), strlen(search_str))) == 0))
         {
             arr[i] = cur;
             i++;
@@ -736,16 +944,16 @@ int find_str(Storage *storage, Smartphone **arr, StrGetters str_get, char *searc
 
 void sorting(Smartphone **arr, int b, int e, bool is_str, Getters get, StrGetters str_get)
 {
-    int left, right;
-    float middle;
-    char *str_middle;
+    int left, right;    // Indices for the left and right boundaries of the array segment
+    float middle;       // Middle value for numeric sorting
+    char *str_middle;   // Middle value for string sorting
 
     left = b;
     right = e;
     if (is_str)
         str_middle = str_get(arr[(left + right) / 2]);
     else
-        middle = get(arr[(left + right) / 2]); /* It's a reference element */
+        middle = get(arr[(left + right) / 2]);
     while (left <= right)
     {
         if (is_str)
@@ -765,7 +973,7 @@ void sorting(Smartphone **arr, int b, int e, bool is_str, Getters get, StrGetter
 
 void swap(Smartphone **a, Smartphone **b)
 {
-    Smartphone *c;
+    Smartphone *c;  // Temporary pointer to store the value of 'a'
     c = *a;
     *a = *b;
     *b = c;
@@ -807,11 +1015,21 @@ float get_price(Smartphone *smartphone)
     return (float) smartphone->price;
 }
 
+float get_camera_resolution(Smartphone *smartphone)
+{
+    int i;      // Iterator
+    int max;    // Max value of array
+    max = smartphone->camera_resolution[0];
+    for (i = 1; i < smartphone->number_of_cameras; i++)
+        if (smartphone->camera_resolution[i] > max) max = smartphone->camera_resolution[i];
+    return (float) max;
+}
+
 /* ------ */
 
 void get_string(char *string, int max_len)
 {
-    size_t len;
+    size_t len; // Length of string
     if (string)
     {
         fgets(string, max_len, stdin);
@@ -822,7 +1040,7 @@ void get_string(char *string, int max_len)
 
 void save_storage(Storage *storage, FILE *file)
 {
-    if (!file) printf("☹️\n");
+    if (!file) printf("Error file saving\n");
     else
     {
         rewind(file);
@@ -842,6 +1060,7 @@ void save_storage(Storage *storage, FILE *file)
 void delete_position(Smartphone *position)
 {
     free(position->model);
+    free(position->camera_resolution);
     position->next = NULL;
     position->prev = NULL;
     free(position);
@@ -849,7 +1068,8 @@ void delete_position(Smartphone *position)
 
 void delete_brands(Brands *brands)
 {
-    Brand *cur_brand, *tmp_brand;
+    Brand *cur_brand;   // Current element of brand list
+    Brand *tmp_brand;   // Temporary pointer to the element being deleted
 
     cur_brand = brands->first_brand;
     while (cur_brand)
@@ -864,7 +1084,8 @@ void delete_brands(Brands *brands)
 
 void delete_storage(Storage *storage)
 {
-    Smartphone *cur, *next;
+    Smartphone *cur;    // Current element of list
+    Smartphone *next;   // Next element of list
     cur = storage->first_pos;
     while (cur != NULL)
     {
