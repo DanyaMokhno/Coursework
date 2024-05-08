@@ -5,10 +5,10 @@
 #ifdef WIN32
 #include <stdint.h>
 #define CLS system("cls");
-//#define CH_TO_UTF8 system("chсp 65001");
+// #define CH_TO_UTF8 system("chсp 65001");
 #else
 #define CLS system("clear");
-//#define CH_TO_UTF8
+// #define CH_TO_UTF8
 #endif
 #define PRINT_LINE puts("+-----+----------------------+-----------------+-------+---------+--------+---------+----------+-------------------+");
 #define MIN(a, b) (a < b) ? a : b
@@ -70,141 +70,140 @@ typedef char *(StrGetters)(Smartphone *smartphone);
 
 /*--------- Define functions -----------*/
 
-// Function to create an empty storage
-
+/* Function to create an empty storage */
 Storage *create_storage();
 
-// Function to create an empty list of brands
+/* Function to create an empty list of brands */
 Brands *create_brands();
 
-// Function to open a file for reading
+/* Function to open a file for reading */
 FILE *open_file();
 
-// Function to fill the storage with smartphones from a file
+/* Function to fill the storage with smartphones from a file */
 void fill_storage(Storage *storage, FILE *source, Brands *brands);
 
-// Function to create a new smartphone with a given index
+/* Function to create a new smartphone with a given index */
 Smartphone *create_position(int index);
 
-// Function to set values for a smartphone
+/* Function to set values for a smartphone */
 void set_values(Smartphone *smartphone, char *str, Brands *brands);
 
-// Function to set the brand for a smartphone
+/* Function to set the brand for a smartphone */
 void set_brand(Smartphone *smartphone, char *brand, Brands *brands);
 
-// Function to split camera resolutions from a string and set them to a smartphone
+/* Function to split camera resolutions from a string and set them to a smartphone */
 void split_camera_resolution(Smartphone *smartphone, char *str);
 
-// Function to add a smartphone as the first element in the storage
+/* Function to add a smartphone as the first element in the storage */
 void add_first(Storage *storage, Smartphone *new_position);
 
-// Function to add a smartphone after a specified position in the storage
+/* Function to add a smartphone after a specified position in the storage */
 void add(Storage *storage, Smartphone *cur_position, Smartphone *new_position);
 
-// Main menu function
+/* Main menu function */
 void menu(Storage *storage, Brands *brands, FILE *file);
 
-// Function to display help information
+/* Function to display help information */
 void help();
 
-// Function to print the storage table
+/* Function to print the storage table */
 void print_table(Storage *storage);
 
-// Function to print the header of the storage table
+/* Function to print the header of the storage table */
 void print_header();
 
-// Function to print a smartphone's information in the table format
+/* Function to print a smartphone's information in the table format */
 void print(Smartphone *smartphone);
 
-// Function to concatenate camera resolutions into a string
+/* Function to concatenate camera resolutions into a string */
 char *glue_camera_resolutions(Smartphone *smartphone);
 
-// Function to read a string from the input
+/* Function to read a string from the input */
 void get_string(char *string, int max_len);
 
-// Function to insert a smartphone at a specified index in the storage
+/* Function to insert a smartphone at a specified index in the storage */
 void insert_selected(Storage *storage, Smartphone *new, int index);
 
-// Function to delete a smartphone from the storage by its index
+/* Function to delete a smartphone from the storage by its index */
 void delete_selected(Storage *storage, int index);
 
-// Function to change the information of a smartphone in the storage
+/* Function to change the information of a smartphone in the storage */
 void change_position(Storage *storage, int index, Brands *brands);
 
-// Function to print all available brands
+/* Function to print all available brands */
 void print_brands(Brands *brands);
 
-// Function to find smartphones by brand
+/* Function to find smartphones by brand */
 int find_brands(Storage *storage, Smartphone **arr, Brands *brands, int value);
 
-// Function to find smartphones by numeric attribute
+/* Function to find smartphones by numeric attribute */
 int find(Storage *storage, Smartphone **arr, Getters get, float search_val);
 
-// Function to find smartphones by string attribute
+/* Function to find smartphones by string attribute */
 int find_str(Storage *storage, Smartphone **arr, StrGetters str_get, char *search_str);
 
-// Function to perform sorting of smartphones
+/* Function to perform sorting of smartphones */
 void sorting(Smartphone **arr, int b, int e, bool is_str, Getters get, StrGetters str_get);
 
-/* getters */
+/* -------- getters -------- */
 
-// Getter function for the model attribute
+/* Getter function for the model attribute */
 char *get_model(Smartphone *smartphone);
 
-// Getter function for the brand attribute
+/* Getter function for the brand attribute */
 char *get_brand(Smartphone *smartphone);
 
-// Getter function for the RAM attribute
+/* Getter function for the RAM attribute */
 float get_ram(Smartphone *smartphone);
 
-// Getter function for the memory attribute
+/* Getter function for the memory attribute */
 float get_memory(Smartphone *smartphone);
 
-// Getter function for the screen size attribute
+/* Getter function for the screen size attribute */
 float get_screen_size(Smartphone *smartphone);
 
-// Getter function for the weight attribute
+/* Getter function for the weight attribute */
 float get_weight(Smartphone *smartphone);
 
-// Getter function for the price attribute
+/* Getter function for the price attribute */
 float get_price(Smartphone *smartphone);
 
-// Getter function for the camera resolution attribute
+/* Getter function for the camera resolution attribute */
 float get_camera_resolution(Smartphone *smartphone);
 
-/* ------ */
+/* ------------------------ */
 
-// Function to print menu options for search and sort
+/* Function to print menu options for search and sort */
 void print_opt();
 
-// Function to swap two smartphone pointers
+/* Function to swap two smartphone pointers */
 void swap(Smartphone **a, Smartphone **b);
 
-// Function to save the storage to a file
+/* Function to save the storage to a file */
 void save_storage(Storage *storage, FILE *file);
 
-// Function to delete a smartphone from memory
+/* Function to delete a smartphone from memory */
 void delete_position(Smartphone *position);
 
-// Function to delete the list of brands from memory
+/* Function to delete the list of brands from memory */
 void delete_brands(Brands *brand);
 
-// Function to delete the storage from memory
+/* Function to delete the storage from memory */
 void delete_storage(Storage *storage);
 
 /*--------- End define functions -----------*/
 
 int main()
 {
-    Storage *Market = NULL; // Head of storage list
-    Brands *brands = NULL;  // Head of brands list
+    Storage *Market = NULL; /* Head of storage list */
+    Brands *brands = NULL;  /* Head of brands list */
     FILE *file;
     file = open_file();
     Market = create_storage();
     brands = create_brands();
     if (Market && brands)
     {
-//        CH_TO_UTF8
+/*        CH_TO_UTF8 */
         fill_storage(Market, file, brands);
         if (Market->size >= 0)
             menu(Market, brands, file);
@@ -218,7 +217,7 @@ int main()
 
 Storage *create_storage()
 {
-    Storage *storage;   // Head of storage list
+    Storage *storage;   /* Head of storage list */
     storage = malloc(sizeof(Storage));
     if (storage)
     {
@@ -232,7 +231,7 @@ Storage *create_storage()
 
 Brands *create_brands()
 {
-    Brands *brands; // Head of brands list
+    Brands *brands; /* Head of brands list */
     brands = malloc(sizeof(Brands));
     if (brands)
     {
@@ -243,10 +242,10 @@ Brands *create_brands()
 
 FILE *open_file()
 {
-    char filename[MAX_FILENAME_LEN];    // Name of source/destination file
-    char create;                        // Yes/No chosen
-    FILE *file;                         // File object
-    size_t len;                         // Length of file
+    char filename[MAX_FILENAME_LEN];    /* Name of source/destination file */
+    char create;                        /* Yes/No chosen */
+    FILE *file;                         /* File object */
+    size_t len;                         /* Length of file */
     printf("Input filename: ");
     fgets(filename, MAX_FILENAME_LEN, stdin);
     len = strlen(filename);
@@ -263,9 +262,9 @@ FILE *open_file()
 
 void fill_storage(Storage *storage, FILE *source, Brands *brands)
 {
-    Smartphone *new_pos;                // New element of list
-    char tmp_str[MAX_STR_IN_FILE_LEN];  // String from source file
-    int i;                              // Iterator
+    Smartphone *new_pos;                /* New element of list */
+    char tmp_str[MAX_STR_IN_FILE_LEN];  /* String from source file */
+    int i;                              /* Iterator */
     if (storage != NULL)
     {
         if (source != NULL)
@@ -290,7 +289,7 @@ void fill_storage(Storage *storage, FILE *source, Brands *brands)
 
 Smartphone *create_position(int index)
 {
-    Smartphone *position = NULL;    // New element of list
+    Smartphone *position = NULL;    /* New element of list */
     position = (Smartphone *) malloc(sizeof(Smartphone));
     if (position)
     {
@@ -302,8 +301,8 @@ Smartphone *create_position(int index)
 
 void set_values(Smartphone *smartphone, char *str, Brands *brands)
 {
-    char *brand_name;   // String with name of brand
-    char *cameras;      // String with camera resolutions
+    char *brand_name;   /* String with name of brand */
+    char *cameras;      /* String with camera resolutions */
     smartphone->model = malloc(sizeof(char) * MAX_MODEL_NAME_LEN);
     cameras = malloc(MAX_MODEL_NAME_LEN * sizeof(char));
     smartphone->brand = NULL;
@@ -342,8 +341,8 @@ void set_values(Smartphone *smartphone, char *str, Brands *brands)
 
 void set_brand(Smartphone *smartphone, char *brand, Brands *brands)
 {
-    Brand *cur_brand;           // Current element of brand list
-    Brand *prev_brand = NULL;   // Previous element of brand list
+    Brand *cur_brand;           /* Current element of brand list */
+    Brand *prev_brand = NULL;   /* Previous element of brand list */
     cur_brand = brands->first_brand;
 
     while (cur_brand != NULL)
@@ -368,10 +367,10 @@ void set_brand(Smartphone *smartphone, char *brand, Brands *brands)
 
 void split_camera_resolution(Smartphone *smartphone, char *str)
 {
-    int i, j, k;    // Iterators
-    char *tmp_str;  // String for contain numbers from file
-    int len;        // Length of source string
-    int number;     // Number of cameras in the smartphone
+    int i, j, k;    /* Iterators */
+    char *tmp_str;  /* String for contain numbers from file */
+    int len;        /* Length of source string */
+    int number;     /* Number of cameras in the smartphone */
     if (smartphone)
     {
         len = (int) strlen(str);
@@ -436,15 +435,15 @@ void add_first(Storage *storage, Smartphone *new_position)
 
 void menu(Storage *storage, Brands *brands, FILE *file)
 {
-    int global_menu_choice;                 // Integer variable to store the user's choice for the menu option
-    int val;                                // Integer variable used for various purposes, such as indexing and storing user input
-    int i;                                  // Iterator
-    char search_string[MAX_MODEL_NAME_LEN]; // Character array to store the search string input by the user
-    float search_val;                       // Floating-point variable to store the search value input by the user
-    Smartphone *position;                   // Pointer to a Smartphone structure, used for various operations within the menu
-    Smartphone **arr;                       // Pointer to an array of pointers to Smartphone structures, used for storing positions for searching or sorting
-    Getters *getters[6];                    // Array of function pointers to getter functions for different attributes of a smartphone
-    StrGetters *str_getters[2];             // Array of function pointers to getter functions specifically for string attributes of a smartphone
+    int global_menu_choice;                 /* Integer variable to store the user's choice for the menu option */
+    int val;                                /* Integer variable used for various purposes, such as indexing and storing user input */
+    int i;                                  /* Iterator */
+    char search_string[MAX_MODEL_NAME_LEN]; /* Character array to store the search string input by the user */
+    float search_val;                       /* Floating-point variable to store the search value input by the user */
+    Smartphone *position;                   /* Pointer to a Smartphone structure, used for various operations within the menu */
+    Smartphone **arr;                       /* Pointer to an array of pointers to Smartphone structures, used for storing positions for searching or sorting */
+    Getters *getters[6];                    /* Array of function pointers to getter functions for different attributes of a smartphone */
+    StrGetters *str_getters[2];             /* Array of function pointers to getter functions specifically for string attributes of a smartphone */
 
     str_getters[0] = get_model;
     str_getters[1] = get_brand;
@@ -674,7 +673,7 @@ void help()
 
 void print_table(Storage *storage)
 {
-    Smartphone *cur;    // cur element in list
+    Smartphone *cur;    /* cur element in list */
     cur = storage->first_pos;
     print_header();
     while (cur != NULL)
@@ -688,7 +687,7 @@ void print_table(Storage *storage)
 void print_header()
 {
     PRINT_LINE
-    /* № – %-5s и убрать один пробел*/
+    // № – %-5s и убрать один пробел
     printf("|  %-4s | %-20s | %-15s | %-5s | %-5s | %-6s | %-7s | %-8s | %-17s |\n",
            "N\x1b[4mo\x1b[0m", "Model", "Brand", "RAM", "Storage", "Screen", "Weight", "Price", "Camera Resolution");
     PRINT_LINE
@@ -696,7 +695,7 @@ void print_header()
 
 void print(Smartphone *smartphone)
 {
-    char *camera_res; // string for contain glued camera resolution
+    char *camera_res; /* string for contain glued camera resolution */
     camera_res = glue_camera_resolutions(smartphone);
     printf("| %3i | %-20s | %-15s | %-3dGB | %-5dGB | %-5.2f\" | %-6.2fg | $%-7.2f | %15smp |\n",
            smartphone->index, smartphone->model, smartphone->brand->name, smartphone->ram, smartphone->memory,
@@ -706,9 +705,9 @@ void print(Smartphone *smartphone)
 
 char *glue_camera_resolutions(Smartphone *smartphone)
 {
-    int i, j, k;       // Iterators
-    char *cameras_res;  // string for contain glued camera resolution
-    char tmp_cam[4];    // string for temporary containment of number from array of camera resolutions
+    int i, j, k;        /* Iterators */
+    char *cameras_res;  /* string for contain glued camera resolution */
+    char tmp_cam[4];    /* string for temporary containment of number from array of camera resolutions */
 
     cameras_res = malloc(smartphone->number_of_cameras * 3 * sizeof(char));
     for (i = 0, j = 0; i < smartphone->number_of_cameras; i++)
@@ -728,8 +727,8 @@ char *glue_camera_resolutions(Smartphone *smartphone)
 
 void insert_selected(Storage *storage, Smartphone *new, int index)
 {
-    Smartphone *cur;    // Current element of list
-    bool found;         // flag of found number
+    Smartphone *cur;    /* Current element of list */
+    bool found;         /* flag of found number */
 
     found = 0;
     if (storage->size == 0)
@@ -769,8 +768,8 @@ void insert_selected(Storage *storage, Smartphone *new, int index)
 
 void delete_selected(Storage *storage, int index)
 {
-    Smartphone *cur;    // Current element of list
-    Smartphone *tmp;    // Temporary pointer to the element being deleted
+    Smartphone *cur;    /* Current element of list */
+    Smartphone *tmp;    /* Temporary pointer to the element being deleted */
     cur = storage->first_pos;
 
     if (storage->size == 1)
@@ -818,9 +817,9 @@ void delete_selected(Storage *storage, int index)
 
 void change_position(Storage *storage, int index, Brands *brands)
 {
-    Smartphone *item;   // Current/changeable element of list
-    char *brand_name;   // String with name of brand
-    char *cameras;      // String with camera resolutions
+    Smartphone *item;   /* Current/changeable element of list */
+    char *brand_name;   /* String with name of brand */
+    char *cameras;      /* String with camera resolutions */
 
     brand_name = malloc(sizeof(char) * MAX_MODEL_NAME_LEN);
     item = storage->first_pos;
@@ -879,7 +878,7 @@ void print_opt()
 
 void print_brands(Brands *brands)
 {
-    Brand *cur; // Current brand element
+    Brand *cur; /* Current brand element */
     int i;
     for (i = 0, cur = brands->first_brand; cur != NULL; i++, cur = cur->next)
         printf("%i - %s\n", i + 1, cur->name);
@@ -887,9 +886,9 @@ void print_brands(Brands *brands)
 
 int find_brands(Storage *storage, Smartphone **arr, Brands *brands, int value)
 {
-    Smartphone *cur_sm; // Current element of list
-    Brand *cur;         // Current brand element
-    int i;              // Iterator
+    Smartphone *cur_sm; /* Current element of list */
+    Brand *cur;         /* Current brand element */
+    int i;              /* Iterator */
 
     for (i = 0, cur = brands->first_brand; i < value - 1; i++, cur = cur->next);
 
@@ -908,8 +907,8 @@ int find_brands(Storage *storage, Smartphone **arr, Brands *brands, int value)
 
 int find(Storage *storage, Smartphone **arr, Getters get, float search_val)
 {
-    Smartphone *cur;    // Current element of list
-    int i;              // Iterator
+    Smartphone *cur;    /* Current element of list */
+    int i;              /* Iterator */
     cur = storage->first_pos;
     i = 0;
     while (cur != NULL)
@@ -926,8 +925,8 @@ int find(Storage *storage, Smartphone **arr, Getters get, float search_val)
 
 int find_str(Storage *storage, Smartphone **arr, StrGetters str_get, char *search_str)
 {
-    Smartphone *cur;    // Current element of list
-    int i;              // Integer
+    Smartphone *cur;    /* Current element of list */
+    int i;              /* Integer */
     cur = storage->first_pos;
     i = 0;
     while (cur != NULL)
@@ -944,9 +943,9 @@ int find_str(Storage *storage, Smartphone **arr, StrGetters str_get, char *searc
 
 void sorting(Smartphone **arr, int b, int e, bool is_str, Getters get, StrGetters str_get)
 {
-    int left, right;    // Indices for the left and right boundaries of the array segment
-    float middle;       // Middle value for numeric sorting
-    char *str_middle;   // Middle value for string sorting
+    int left, right;    /* Indices for the left and right boundaries of the array segment */
+    float middle;       /* Middle value for numeric sorting */
+    char *str_middle;   /* Middle value for string sorting */
 
     left = b;
     right = e;
@@ -973,7 +972,7 @@ void sorting(Smartphone **arr, int b, int e, bool is_str, Getters get, StrGetter
 
 void swap(Smartphone **a, Smartphone **b)
 {
-    Smartphone *c;  // Temporary pointer to store the value of 'a'
+    Smartphone *c;  /* Temporary pointer to store the value of 'a' */
     c = *a;
     *a = *b;
     *b = c;
@@ -1017,8 +1016,8 @@ float get_price(Smartphone *smartphone)
 
 float get_camera_resolution(Smartphone *smartphone)
 {
-    int i;      // Iterator
-    int max;    // Max value of array
+    int i;      /* Iterator */
+    int max;    /* Max value of array */
     max = smartphone->camera_resolution[0];
     for (i = 1; i < smartphone->number_of_cameras; i++)
         if (smartphone->camera_resolution[i] > max) max = smartphone->camera_resolution[i];
@@ -1029,7 +1028,7 @@ float get_camera_resolution(Smartphone *smartphone)
 
 void get_string(char *string, int max_len)
 {
-    size_t len; // Length of string
+    size_t len; /* Length of string */
     if (string)
     {
         fgets(string, max_len, stdin);
@@ -1068,8 +1067,8 @@ void delete_position(Smartphone *position)
 
 void delete_brands(Brands *brands)
 {
-    Brand *cur_brand;   // Current element of brand list
-    Brand *tmp_brand;   // Temporary pointer to the element being deleted
+    Brand *cur_brand;   /* Current element of brand list */
+    Brand *tmp_brand;   /* Temporary pointer to the element being deleted */
 
     cur_brand = brands->first_brand;
     while (cur_brand)
@@ -1084,8 +1083,8 @@ void delete_brands(Brands *brands)
 
 void delete_storage(Storage *storage)
 {
-    Smartphone *cur;    // Current element of list
-    Smartphone *next;   // Next element of list
+    Smartphone *cur;    /* Current element of list */
+    Smartphone *next;   /* Next element of list */
     cur = storage->first_pos;
     while (cur != NULL)
     {
